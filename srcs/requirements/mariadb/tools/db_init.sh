@@ -36,4 +36,5 @@ EOF
     fi
 
 
+    echo "Starting MariaDB server..."
     exec mysqld --user=mysql
