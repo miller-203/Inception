@@ -1,11 +1,15 @@
 FROM debian:bullseye
 
-RUN apt-get update && apt-get install -y nginx
+RUN apt-get update && apt-get install -y nginx openssl && apt-get clean
 
-COPY tools/nginx.sh /usr/local/bin/nginx.sh
+RUN mkdir -p /run/nginx
+RUN mkdir -p /etc/ssl/certs
+RUN openssl req -x509 -nodes  \
+-keyout /etc/ssl/certs/nginx-selfsigned.key \
+-out /etc/ssl/certs/nginx-selfsigned.crt \
+-subj "/CN=yolaidi-.42.fr"
 
-COPY conf/nginx.conf /etc/nginx/sites-available/default
+COPY conf/nginx.conf /etc/nginx/conf.d/conf.conf
 
-RUN chmod +x /usr/local/bin/nginx.sh
 
-ENTRYPOINT ["/usr/local/bin/nginx.sh"]
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

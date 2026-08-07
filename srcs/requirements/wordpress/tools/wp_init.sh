@@ -4,9 +4,7 @@ set -e
 mkdir -p /var/www/html
 mkdir -p /var/www/html/wp-content/uploads
 
-chown -R www-data:www-data /var/www/html
 
-cd /var/www/html
 
 echo "Waiting for MariaDB..."
 
@@ -52,6 +50,9 @@ if [ ! -f wp-config.php ]; then
         --user_pass="$WP_USER_PASSWORD" \
         --role=author \
         --allow-root
+
+
+chown -R www-data:www-data /var/www/html
 fi
 
 echo "Starting PHP-FPM..."

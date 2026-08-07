@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 mkdir -p /var/lib/mysql
 mkdir -p /var/run/mysqld
@@ -6,35 +7,61 @@ mkdir -p /var/run/mysqld
 chown -R mysql:mysql /var/lib/mysql
 chown -R mysql:mysql /var/run/mysqld
 
-rm -rf /var/lib/mysql/*
-
-echo "Database already initialized"
-ls -la /var/lib/mysql
-
-
 if [ ! -d /var/lib/mysql/mysql ]; then
-    mysql_install_db --user=mysql --datadir=/var/lib/mysql
+    echo "Initializing MariaDB..."
 
-    echo "Starting MariaDB server..."
-    mysqld_safe --datadir=/var/lib/mysql --skip-networking & 
+    mysql_install_db \
+        --user=mysql \
+        --datadir=/var/lib/mysql
 
-    until mysqladmin ping --silent; do
+    echo "Starting temporary MariaDB..."
+
+    mysqld_safe \
+        --datadir=/var/lib/mysql \
+        --skip-networking &
+
+    until mysqladmin \
+        --socket=/var/run/mysqld/mysqld.sock \
+        -u root \
+        ping --silent
+    do
         sleep 1
-    done 
+    done
 
-mysql -u root << EOF
-    CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\`;
-    CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
-    GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%';
-    ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';
-    FLUSH PRIVILEGES;
+    echo "Creating database and users..."
+
+    mysql \
+        --socket=/var/run/mysqld/mysqld.sock \
+        -u root << EOF
+
+CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\`;
+
+CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%'
+IDENTIFIED BY '$MYSQL_PASSWORD';
+
+GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE`.*
+TO '$MYSQL_USER'@'%';
+
+ALTER USER 'root'@'localhost'
+IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';
+
+FLUSH PRIVILEGES;
+
 EOF
 
-    # mysqladmin -uroot -p"$MYSQL_ROOT_PASSWORD"  shutdown
-    mysqladmin -u root -p"$MYSQL_ROOT_PASSWORD" shutdown
+    echo "Stopping temporary MariaDB..."
 
-    fi
+    mysqladmin \
+        --socket=/var/run/mysqld/mysqld.sock \
+        -u root \
+        -p"$MYSQL_ROOT_PASSWORD" \
+        shutdown
 
+    echo "MariaDB initialized."
+else
+    echo "MariaDB already initialized."
+fi
 
-    echo "Starting MariaDB server..."
-    exec mysqld --user=mysql
+echo "Starting MariaDB..."
+
+exec mysqld --user=mysql

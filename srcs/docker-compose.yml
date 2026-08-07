@@ -22,10 +22,37 @@ services:
       - inception
     volumes:
       - wordpress_data:/var/www/html
+    
+  nginx:
+    image: nginx:img
+    build: ./requirements/nginx
+    container_name: nginx
+    env_file:
+      - .env
+    depends_on:
+      - wordpress
+    ports:
+      - "443:443"
+    networks:
+      - inception
+    volumes:
+      - wordpress_data:/var/www/html
 
 volumes:
   mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/miller/data/mariadb
+
   wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/miller/data/wordpress
 
 networks:
   inception:
+    driver: bridge
