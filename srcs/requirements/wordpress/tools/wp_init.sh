@@ -4,12 +4,12 @@ set -e
 mkdir -p /var/www/html
 mkdir -p /var/www/html/wp-content/uploads
 
-
+mkdir -p /run/php
 
 echo "Waiting for MariaDB..."
 
 until mysqladmin ping \
-    -h"$MYSQL_HOST" \
+    -h"mariadb" \
     -u"$MYSQL_USER" \
     -p"$MYSQL_PASSWORD" \
     --silent
@@ -28,7 +28,7 @@ if [ ! -f wp-config.php ]; then
         --dbname="$MYSQL_DATABASE" \
         --dbuser="$MYSQL_USER" \
         --dbpass="$MYSQL_PASSWORD" \
-        --dbhost="$MYSQL_HOST" \
+        --dbhost="mariadb" \
         --allow-root
 
     echo "Installing WordPress..."

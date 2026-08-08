@@ -1,8 +1,8 @@
 NAME = inception
 
 all:
-	mkdir -p /home/miller/data/mariadb
-	mkdir -p /home/miller/data/wordpress
+	mkdir -p /home/yolaidi-/data/mariadb
+	mkdir -p /home/yolaidi-/data/wordpress
 	docker compose -f srcs/docker-compose.yml up --build
 
 down:
