@@ -89,6 +89,18 @@ services:
       - wordpress
     volumes:
       - wordpress_data:/var/www/html
+  
+  portainer:
+    image: portainer:img
+    build: ./requirements/bonus/portainer
+    container_name: portainer
+    restart: on-failure
+    networks : 
+      - inception
+    ports:
+    - "9443:9443"
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   mariadb_data:
