@@ -1,4 +1,4 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
 RUN apt-get update && apt-get install -y nginx openssl && apt-get clean
 
@@ -10,6 +10,5 @@ RUN openssl req -x509 -nodes  \
 -subj "/CN=yolaidi-.42.fr"
 
 COPY conf/nginx.conf /etc/nginx/conf.d/conf.conf
-
 
 ENTRYPOINT ["nginx", "-g", "daemon off;"]

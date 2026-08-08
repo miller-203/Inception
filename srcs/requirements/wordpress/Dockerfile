@@ -1,4 +1,4 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
 RUN apt-get update && \
     apt-get install -y \
@@ -13,9 +13,9 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
     chmod +x wp-cli.phar && \
     mv wp-cli.phar /usr/local/bin/wp
 
-RUN rm -f /etc/php/7.4/fpm/pool.d/www.conf
+RUN rm -f /etc/php/8.2/fpm/pool.d/www.conf
 
-COPY conf/wp.conf /etc/php/7.4/fpm/pool.d/wp.conf
+COPY conf/wp.conf /etc/php/8.2/fpm/pool.d/wp.conf
 
 COPY tools/wp_init.sh /usr/local/bin/wp_init.sh
 

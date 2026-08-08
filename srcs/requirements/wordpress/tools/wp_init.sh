@@ -52,9 +52,14 @@ if [ ! -f wp-config.php ]; then
         --allow-root
 
 
+    wp config set WP_REDIS_HOST redis --allow-root
+    wp config set WP_REDIS_PORT 6379   --allow-root
+
+    wp plugin install redis-cache --activate --allow-root
+    wp redis enable --allow-root
 chown -R www-data:www-data /var/www/html
 fi
 
 echo "Starting PHP-FPM..."
 
-exec php-fpm7.4 -F
+exec php-fpm8.2 -F

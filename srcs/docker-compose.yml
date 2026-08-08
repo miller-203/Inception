@@ -1,7 +1,9 @@
 services:
   mariadb:
+    image: mariadb:img
     build: ./requirements/mariadb
     container_name: mariadb
+    restart: on-failure
     env_file:
       - .env
     networks:
@@ -10,8 +12,10 @@ services:
       - mariadb_data:/var/lib/mysql
 
   wordpress:
+    image: wordpress:img
     build: ./requirements/wordpress
     container_name: wordpress
+    restart: on-failure
     env_file:
       - .env
     depends_on:
@@ -25,6 +29,7 @@ services:
     image: nginx:img
     build: ./requirements/nginx
     container_name: nginx
+    restart: on-failure
     env_file:
       - .env
     depends_on:
@@ -33,6 +38,55 @@ services:
       - "443:443"
     networks:
       - inception
+    volumes:
+      - wordpress_data:/var/www/html
+
+  redis:
+    image: redis:img
+    build: ./requirements/bonus/redis
+    restart: on-failure
+    container_name: redis
+    networks:
+      - inception
+  
+  adminer:
+    image: adminer:img
+    build: ./requirements/bonus/adminer
+    container_name: adminer
+    restart: on-failure
+    depends_on:
+      - mariadb
+    networks:
+      - inception
+    ports:
+      - "8080:8080"
+
+  website:
+    image: website:img
+    build: ./requirements/bonus/website
+    restart: on-failure
+    container_name: website
+    networks:
+      - inception
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./requirements/bonus/website:/var/www/html
+
+  ftp:
+    image: ftp:img
+    build: ./requirements/bonus/ftp
+    container_name: ftp
+    restart: on-failure
+    env_file:
+      - .env
+    networks:
+      - inception
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"
+    depends_on:
+      - wordpress
     volumes:
       - wordpress_data:/var/www/html
 
