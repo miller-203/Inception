@@ -38,12 +38,13 @@ inception/
 ├── README.md
 ├── USER_DOC.md
 ├── DEV_DOC.md
-├── .env                          # not committed — see below
+├── .gitignore
 ├── secrets/                      # not committed — see below
 │   ├── db_root_password.txt
 │   ├── db_password.txt
 │   └── wp_admin_password.txt
 └── srcs/
+    ├── .env                          # not committed — see below
     ├── docker-compose.yml
     └── requirements/
         ├── nginx/
@@ -62,7 +63,9 @@ inception/
             ├── redis/
             ├── ftp/
             ├── adminer/
-            └── static-site/
+            ├── portainer/
+            └── website/
+
 ```
 
 *[Adjust this tree to match your actual repo layout.]*
@@ -76,7 +79,7 @@ inception/
 Create a `.env` file at the repository root (this file is **not** committed to Git — it should be listed in `.gitignore`). Example:
 
 ```env
-DOMAIN_NAME=[your_login].42.fr
+DOMAIN_NAME=yolaidi-.42.fr
 
 MYSQL_DATABASE=wordpress
 MYSQL_USER=wp_user
@@ -98,20 +101,26 @@ Create the `secrets/` folder at the repository root (also excluded from Git) con
 
 ```bash
 mkdir -p secrets
-echo -n "your_root_password"   > secrets/db_root_password.txt
-echo -n "your_db_password"     > secrets/db_password.txt
+echo -n "your_mysql_root_password"   > secrets/mysql_root_password.txt
+echo -n "your_mysql_password"     > secrets/mysql_password.txt
 echo -n "your_wp_admin_pass"   > secrets/wp_admin_password.txt
+echo -n "your_wp_user_pass"   > secrets/wp_user_password.txt
+echo -n "your_ftp_pass"   > secrets/ftp_password.txt
 ```
 
 **Declare them in `docker-compose.yml`** under the top-level `secrets:` key:
 ```yaml
 secrets:
-  db_root_password:
-    file: ../secrets/db_root_password.txt
-  db_password:
-    file: ../secrets/db_password.txt
+  mysql_root_password:
+    file: ../secrets/mysql_root_password.txt
+  mysql_password:
+    file: ../secrets/mysql_password.txt
   wp_admin_password:
     file: ../secrets/wp_admin_password.txt
+  wp_user_password:
+    file: ../secrets/wp_user_password.txt
+  ftp_password:
+    file: ../secrets/ftp_password.txt
 ```
 
 **Attach them to the services that need them:**
@@ -119,12 +128,16 @@ secrets:
 services:
   mariadb:
     secrets:
-      - db_root_password
-      - db_password
+      - mysql_root_password
+      - mysql_password
   wordpress:
     secrets:
-      - db_password
       - wp_admin_password
+      - wp_user_password
+      - mysql_password
+  ftp:
+    secrets:
+      - ftp_password
 ```
 
 Docker mounts each declared secret as a **read-only file** inside the container at `/run/secrets/<secret_name>` — it is never injected as an environment variable and never appears in `docker inspect`.
@@ -149,7 +162,7 @@ secrets/
 
 Add the domain to your VM's hosts file so it resolves to the container's host:
 ```bash
-echo "127.0.0.1 [your_login].42.fr" | sudo tee -a /etc/hosts
+echo "127.0.0.1 yolaidi-.42.fr" | sudo tee -a /etc/hosts
 ```
 
 ---
@@ -222,8 +235,8 @@ Project data is persisted using **named Docker volumes**, bind-mounted to fixed 
 
 | Volume | Host path | Contents |
 |---|---|---|
-| `wordpress_data` | `/home/[your_login]/data/wordpress` | WordPress core files, themes, plugins, uploads |
-| `mariadb_data` | `/home/[your_login]/data/mariadb` | MariaDB database files |
+| `wordpress_data` | `/home/yolaidi-/data/wordpress` | WordPress core files, themes, plugins, uploads |
+| `mariadb_data` | `/home/yolaidi-/data/mariadb` | MariaDB database files |
 
 These are declared in `docker-compose.yml`:
 ```yaml
@@ -233,13 +246,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/[your_login]/data/wordpress
+      device: /home/yolaidi-/data/wordpress
   mariadb_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/[your_login]/data/mariadb
+      device: /home/yolaidi-/data/mariadb
 ```
 
 Because volumes live outside the container's writable layer, **data survives `make down`, container crashes, and image rebuilds**. It is only removed by `make fclean` (or a manual `docker volume rm`), which deletes the underlying host directories.

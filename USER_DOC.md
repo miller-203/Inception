@@ -70,14 +70,12 @@ You should see one container per service (`nginx`, `wordpress`, `mariadb`, and a
 Once the stack is running, open a browser and go to:
 
 ```
-https://[your_login].42.fr
+https://yolaidi-.42.fr
 ```
 
 > Note: since NGINX uses a self-signed TLS certificate (as required by the project), your browser will show a security warning on first visit. This is expected — click "Advanced" → "Proceed" (wording varies by browser) to continue.
 
 The site only responds over **HTTPS**; plain HTTP requests are not served.
-
-*[If you set up a bonus static website, add its URL here, e.g. `https://static.[your_login].42.fr`]*
 
 ---
 
@@ -86,7 +84,7 @@ The site only responds over **HTTPS**; plain HTTP requests are not served.
 The WordPress admin dashboard is available at:
 
 ```
-https://[your_login].42.fr/wp-admin
+https://yolaidi-.42.fr/wp-admin
 ```
 
 Log in with the WordPress administrator account created automatically the first time the stack was launched (see [Managing Credentials](#managing-credentials) below for where to find the password).
@@ -100,7 +98,7 @@ From the dashboard you can:
 *[If Adminer is implemented, add:]*
 The database can also be inspected directly via Adminer at:
 ```
-https://[your_login].42.fr:[adminer_port]
+https://yolaidi-.42.fr:[adminer_port]
 ```
 Server: `mariadb` · Username/Password: see [Managing Credentials](#managing-credentials) · Database: `wordpress` (or the name set in `.env`).
 
@@ -148,7 +146,7 @@ Look for error messages or crash loops.
 
 **3. Check the website responds:**
 ```bash
-curl -vk https://[your_login].42.fr
+curl -vk https://yolaidi-.42.fr
 ```
 A valid HTTP response (e.g. `200 OK` or a redirect) confirms NGINX and WordPress are communicating correctly.
 
