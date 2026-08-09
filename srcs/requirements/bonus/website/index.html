@@ -1,11 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inception — Static Website</title>
+  <style>
+      :root {
+  --bg: #0f172a;
+  --bg-card: #1e293b;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #a78bfa;
+  --radius: 14px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero {
+  text-align: center;
+  padding: 4rem 1.5rem 3rem;
+  background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(167,139,250,0.12));
+}
+
+.hero h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -0.02em;
+}
+
+.hero .subtitle {
+  margin-top: 0.75rem;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+main {
+  flex: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+}
+
+.card h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: var(--accent);
+}
+
+.card p,
+.card li {
+  color: var(--text-muted);
+}
+
+.card ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card ul li::before {
+  content: "→ ";
+  color: var(--accent-2);
+  font-weight: 700;
+}
+
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+  </style>
 </head>
 <body>
-    <h1>Welcome to my website</h1>
+
+  <header class="hero">
+    <h1>Inception</h1>
+    <p class="subtitle">A lightweight static website — bonus service of the 42 Inception project</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>About this service</h2>
+      <p>
+        This is a small standalone website, served without any framework or
+        backend — pure HTML and CSS running in its own Docker container.
+        It demonstrates a simple static Dockerfile-based service running
+        alongside the main NGINX / WordPress / MariaDB stack.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Stack overview</h2>
+      <ul>
+        <li><strong>NGINX</strong> — TLS entry point of the whole infrastructure</li>
+        <li><strong>WordPress</strong> — CMS running via PHP-FPM</li>
+        <li><strong>MariaDB</strong> — database for WordPress</li>
+        <li><strong>Static website</strong> — this page, served independently</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Author</h2>
+      <p>Built by <strong>[your_login]</strong> as part of the 42 curriculum.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 — Inception project · 42 Network</p>
+  </footer>
+
 </body>
 </html>
