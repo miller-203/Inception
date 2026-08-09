@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by [your_login].*
+*This project has been created as part of the 42 curriculum by yolaidi-.*
 
 # Inception
 
@@ -26,7 +26,7 @@ The project consists of setting up a stack composed of:
 - A **WordPress** container (PHP-FPM only, no built-in web server) running the WordPress CMS.
 - A **MariaDB** container serving as the database for WordPress.
 
-Each service runs in its own dedicated container, built from a custom `Dockerfile` based on a lightweight Linux image (e.g. Debian/Alpine — *[specify which one you used]*), with no ready-made images pulled directly from Docker Hub, no `latest` tags, and no use of `network: host`, `--link`, or infinite loops (e.g. `tail -f`) to keep containers alive.
+Each service runs in its own dedicated container, built from a custom `Dockerfile` based on a lightweight Linux image (e.g. Debian/Alpine — *Debian*), with no ready-made images pulled directly from Docker Hub, no `latest` tags, and no use of `network: host`, `--link`, or infinite loops (e.g. `tail -f`) to keep containers alive.
 
 The whole infrastructure is described as code and can be built and launched with a single `make` command, making it fully reproducible on any machine running Docker.
 
@@ -43,13 +43,13 @@ The whole infrastructure is described as code and can be built and launched with
 ### Setup
 1. Clone the repository:
    ```bash
-   git clone [your_repo_url] inception
+   git clone https://github.com/miller-203/Inception inception
    cd inception
    ```
 2. Create your `.env` file and secrets (see [DEV_DOC.md](./DEV_DOC.md) for the full details and required variables).
 3. Add your domain to `/etc/hosts` so it resolves locally:
    ```bash
-   sudo echo "127.0.0.1 [your_login].42.fr" >> /etc/hosts
+   sudo echo "127.0.0.1 yolaidi-.42.fr" >> /etc/hosts
    ```
 
 ### Build & Run
@@ -96,7 +96,7 @@ Only NGINX exposes a port to the host (443). All other services communicate excl
 
 ### Docker Usage and Sources
 
-Every service is built from a **custom Dockerfile** written from scratch, based on the last stable version of *[Debian/Alpine — specify]*. No pre-built service images (e.g. `official-wordpress`, `official-mariadb`) are used; instead, each Dockerfile installs and configures the required software (nginx, php-fpm, mariadb-server, wp-cli, etc.) explicitly, which is what makes the setup fully transparent and reproducible.
+Every service is built from a **custom Dockerfile** written from scratch, based on the last stable version of *Debian*. No pre-built service images (e.g. `official-wordpress`, `official-mariadb`) are used; instead, each Dockerfile installs and configures the required software (nginx, php-fpm, mariadb-server, wp-cli, etc.) explicitly, which is what makes the setup fully transparent and reproducible.
 
 Main design choices:
 - **One container = one service**, each with its own Dockerfile under `srcs/requirements/<service>/`.
@@ -174,12 +174,3 @@ Each bonus service follows the same principles as the mandatory part: its own Do
 - [WordPress Developer Resources](https://developer.wordpress.org/)
 - [MariaDB Documentation](https://mariadb.com/kb/en/documentation/)
 - [Dockerfile Best Practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
-- [42 Inception Subject PDF](*link if publicly hosted, otherwise remove*)
-
-### AI Usage Disclosure
-AI assistance (ChatGPT/Claude — *specify which*) was used during this project for:
-- Drafting and refining the structure of the `README.md`, `USER_DOC.md`, and `DEV_DOC.md` files.
-- Explaining Docker concepts (networks, volumes, secrets) to support the comparison sections above.
-- Debugging help for specific Dockerfile/Compose errors (*add specifics if applicable*).
-
-All Dockerfiles, configuration files, and shell scripts were written and tested manually; AI was not used to generate the infrastructure code itself. *[Adjust this paragraph honestly to reflect exactly how you used AI — 42's evaluation process expects transparency here.]*
