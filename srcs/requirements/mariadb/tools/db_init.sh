@@ -32,6 +32,9 @@ if [ ! -d /var/lib/mysql/mysql ]; then
 
     echo "Creating database and users..."
 
+    MYSQL_PASSWORD=$(cat /run/secrets/mysql_password)
+    MYSQL_ROOT_PASSWORD=$(cat /run/secrets/mysql_root_password)
+
     mysql --protocol=SOCKET --socket=/var/run/mysqld/mysqld.sock -u root << EOF
 
         CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;

@@ -6,6 +6,9 @@ services:
     restart: on-failure
     env_file:
       - .env
+    secrets:
+      - mysql_root_password
+      - mysql_password
     networks:
       - inception
     volumes:
@@ -18,6 +21,10 @@ services:
     restart: on-failure
     env_file:
       - .env
+    secrets:
+      - wp_admin_password
+      - wp_user_password
+      - mysql_password
     depends_on:
       - mariadb
     networks:
@@ -85,6 +92,8 @@ services:
     ports:
       - "21:21"
       - "30000-30010:30000-30010"
+    secrets:
+      - ftp_password
     depends_on:
       - wordpress
     volumes:
@@ -122,9 +131,13 @@ networks:
     driver: bridge
 
 secrets:
-  db_root_password:
-    file: ../secrets/db_root_password.txt
-  db_password:
-    file: ../secrets/db_password.txt
+  mysql_root_password:
+    file: ../secrets/mysql_root_password.txt
+  mysql_password:
+    file: ../secrets/mysql_password.txt
   wp_admin_password:
     file: ../secrets/wp_admin_password.txt
+  wp_user_password:
+    file: ../secrets/wp_user_password.txt
+  ftp_password:
+    file: ../secrets/ftp_password.txt
