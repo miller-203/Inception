@@ -92,6 +92,8 @@ WP_USER_EMAIL=editor@example.com
 
 ### 2. Secrets
 
+> ⚠️ **Important:** the `.env` file must only ever hold **non-sensitive** configuration (domain name, database name, usernames, titles). It must **never** contain passwords. All passwords are handled exclusively through **Docker secrets**, as required by the subject. Storing passwords in `.env` (or as plain `environment:` entries) is considered a critical mistake during evaluation, because their values are visible in plain text via `docker inspect <container>` or `docker exec <container> env`, which defeats the purpose of the exercise.
+
 Create the `secrets/` folder at the repository root (also excluded from Git) containing one file per sensitive value, plain text, no trailing newline issues:
 
 ```bash
@@ -101,7 +103,47 @@ echo -n "your_db_password"     > secrets/db_password.txt
 echo -n "your_wp_admin_pass"   > secrets/wp_admin_password.txt
 ```
 
-These are declared in `docker-compose.yml` under the top-level `secrets:` key and mounted into containers at `/run/secrets/<name>`, then read by the entrypoint scripts (never passed as plain environment variables).
+**Declare them in `docker-compose.yml`** under the top-level `secrets:` key:
+```yaml
+secrets:
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+  db_password:
+    file: ../secrets/db_password.txt
+  wp_admin_password:
+    file: ../secrets/wp_admin_password.txt
+```
+
+**Attach them to the services that need them:**
+```yaml
+services:
+  mariadb:
+    secrets:
+      - db_root_password
+      - db_password
+  wordpress:
+    secrets:
+      - db_password
+      - wp_admin_password
+```
+
+Docker mounts each declared secret as a **read-only file** inside the container at `/run/secrets/<secret_name>` — it is never injected as an environment variable and never appears in `docker inspect`.
+
+**Reading a secret inside a container:** the entrypoint script reads the file content at runtime and exports it locally (or passes it directly to the command that needs it), instead of relying on a pre-set environment variable:
+```bash
+#!/bin/sh
+# example: srcs/requirements/mariadb/tools/entrypoint.sh
+export MYSQL_ROOT_PASSWORD="$(cat /run/secrets/db_root_password)"
+export MYSQL_PASSWORD="$(cat /run/secrets/db_password)"
+# ... use these variables to initialize the database on first boot
+```
+The same pattern applies in the WordPress entrypoint (e.g. when calling `wp config set` or `wp core install` with `wp-cli`, the password is read from `/run/secrets/wp_admin_password` and `/run/secrets/db_password` rather than from `$WP_ADMIN_PASSWORD`).
+
+**`.gitignore` reminder** — make sure both are excluded from version control:
+```
+.env
+secrets/
+```
 
 ### 3. Local DNS
 
