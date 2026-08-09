@@ -42,22 +42,36 @@ The whole infrastructure is described as code and can be built and launched with
 
 ### Setup
 1. Clone the repository:
-   ```bash
+```bash
    git clone https://github.com/miller-203/Inception inception
    cd inception
-   ```
-2. Create your `.env` file and secrets (see [DEV_DOC.md](./DEV_DOC.md) for the full details and required variables).
-3. Add your domain to `/etc/hosts` so it resolves locally:
-   ```bash
+```
+2. Create your `.env` file at the root of the repository with the **non-sensitive** configuration (domain name, database name, WordPress usernames, etc.). See [DEV_DOC.md](./DEV_DOC.md) for the full list of required variables.
+   > ⚠️ `.env` must **not** contain any password. All passwords are handled through Docker secrets (step 3).
+3. Create the `secrets/` folder and fill it with your own passwords — one plain-text file per secret, no `.env`, no hard-coded values in `docker-compose.yml`:
+```bash
+   mkdir -p secrets
+   echo -n "your_root_password"   > secrets/db_root_password.txt
+   echo -n "your_db_password"     > secrets/db_password.txt
+   echo -n "your_wp_admin_pass"   > secrets/wp_admin_password.txt
+```
+   These files are referenced by `docker-compose.yml` under its `secrets:` key and mounted read-only inside the containers at `/run/secrets/<name>` at runtime — they are **never** passed as environment variables. Replace the placeholder values above with your own before running the project. See [Secrets vs Environment Variables](#secrets-vs-environment-variables) below and [DEV_DOC.md](./DEV_DOC.md) for the full explanation.
+4. Add both `.env` and `secrets/` to `.gitignore` so they are never committed:
+```
+   .env
+   secrets/
+```
+5. Add your domain to `/etc/hosts` so it resolves locally:
+```bash
    sudo echo "127.0.0.1 yolaidi-.42.fr" >> /etc/hosts
-   ```
-
+```
+ 
 ### Build & Run
 ```bash
 make
 ```
 This will build all Docker images and start the containers in detached mode via `docker compose`.
-
+ 
 ### Stop / Clean
 ```bash
 make down     # stop and remove containers
@@ -65,11 +79,10 @@ make clean    # also remove images
 make fclean   # also remove volumes and data (full reset)
 make re       # fclean + full rebuild
 ```
-
+ 
 For detailed usage, container management, and troubleshooting commands, see [USER_DOC.md](./USER_DOC.md) (end-user/admin guide) and [DEV_DOC.md](./DEV_DOC.md) (developer guide).
-
+ 
 ---
-
 ## Project Description
 
 ### Architecture Overview
