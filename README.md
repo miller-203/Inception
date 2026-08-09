@@ -51,9 +51,11 @@ The whole infrastructure is described as code and can be built and launched with
 3. Create the `secrets/` folder and fill it with your own passwords — one plain-text file per secret, no `.env`, no hard-coded values in `docker-compose.yml`:
 ```bash
    mkdir -p secrets
-   echo -n "your_root_password"   > secrets/db_root_password.txt
-   echo -n "your_db_password"     > secrets/db_password.txt
+   echo -n "your_mysql_root_password"   > secrets/mysql_root_password.txt
+   echo -n "your_mysql_password"     > secrets/mysql_password.txt
    echo -n "your_wp_admin_pass"   > secrets/wp_admin_password.txt
+   echo -n "your_wp_user_pass"   > secrets/wp_user_password.txt
+   echo -n "your_ftp_pass"   > secrets/ftp_password.txt
 ```
    These files are referenced by `docker-compose.yml` under its `secrets:` key and mounted read-only inside the containers at `/run/secrets/<name>` at runtime — they are **never** passed as environment variables. Replace the placeholder values above with your own before running the project. See [Secrets vs Environment Variables](#secrets-vs-environment-variables) below and [DEV_DOC.md](./DEV_DOC.md) for the full explanation.
 4. Add both `.env` and `secrets/` to `.gitignore` so they are never committed:
